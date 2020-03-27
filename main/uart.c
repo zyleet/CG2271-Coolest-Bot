@@ -1,9 +1,13 @@
 #include "MKL25Z4.h"                    // Device header
+#include "cmsis_os2.h"
 
 #define BAUD_RATE 9600
 #define UART_TX_PORTE22 22
 #define UART_RX_PORTE23 23
 #define UART2_INT_PRIO 128
+
+osSemaphoreId_t UARTSem;
+int UARTData = 0;
 
 void initUART2(uint32_t baud_rate) {
     uint32_t divisor, bus_clock;
@@ -29,17 +33,22 @@ void initUART2(uint32_t baud_rate) {
     UART2->C3 = 0;
     
     UART2->C2 |= ((UART_C2_TE_MASK) | (UART_C2_RE_MASK));
+		
+		//enable Uart2 IRQ
+		NVIC_SetPriority(UART2_IRQn, 3);
+		NVIC_ClearPendingIRQ(UART2_IRQn);
+		NVIC_EnableIRQ(UART2_IRQn);	
+		
+		//initialize semaphore for UART
+		UARTSem = osSemaphoreNew(1,0,NULL);
 }
 
-/* UART2 Transmit Poll */
-void UART2_Transmit_Poll(uint8_t data) {
-    while (!(UART2->S1 & UART_S1_TDRE_MASK));
-    UART2->D = data;
+//Define UART2 interrupt handler
+void UART2_IRQHandler() {
+	NVIC_ClearPendingIRQ(UART2_IRQn);
+	//clear flag
+  UARTData = UART2->S1;
+	UARTData = UART2 ->D;
+	osSemaphoreRelease(UARTSem);
+	//do something
 }
-
-/* UART2 Receive Poll */
-uint8_t UART2_Receive_Poll(void) {
-    while(!(UART2->S1 & UART_S1_RDRF_MASK));
-    return (UART2->D);
-}
-
