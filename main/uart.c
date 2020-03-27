@@ -32,7 +32,7 @@ void initUART2(uint32_t baud_rate) {
     UART2->S2 = 0;
     UART2->C3 = 0;
     
-    UART2->C2 |= ((UART_C2_TE_MASK) | (UART_C2_RE_MASK));
+    UART2->C2 |= ((UART_C2_RE_MASK) | (UART_C2_RIE_MASK));
 		
 		//enable Uart2 IRQ
 		NVIC_SetPriority(UART2_IRQn, 3);
