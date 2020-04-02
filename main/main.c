@@ -3,7 +3,7 @@
  *---------------------------------------------------------------------------*/
  
 #include "RTE_Components.h"
-#include  CMSIS_device_header
+#include CMSIS_device_header
 #include "cmsis_os2.h"
 #include "led_control.h"
 #include "uart.h"
@@ -15,30 +15,25 @@
 #define BAUD_RATE 9600
 #define MASK(x) (1 << (x))
 
+osSemaphoreId_t PWMsem;
+
 //Define thread to handle UART2 interrupts
 void UART2_thread(void *argument) {
 	for (;;) {
-		osSemaphoreAcquire(UARTSem, osWaitForever);
-		//motor related stuff
-		if (UARTdata & 1) {
-			//motor
-			if (UARTdata & 2) {
-				//osSemaphoreRelease(PWMSem);
-			}
-			//initial connection
-			else {
-				//osSemaphoreRelease(initMusic);
-			}
-		}
-		else {
-			//running music
-			if (UARTdata & 2) {
-				//osSemaphoreRelease(startMusic);
-			}
-			//ending music
-			else {
-				//osSemaphoreRelease(endMusic);
-			}
+		osSemaphoreAcquire(UARTsem, osWaitForever);				
+		osSemaphoreRelease(PWMsem);
+	}
+}
+
+void pwm_thread(void *argument) {
+	for (;;) {
+		osSemaphoreAcquire(PWMsem, osWaitForever);
+		if (UARTdata & MASK(2)) {
+			pwm_forward();
+		} else if (UARTdata & MASK(3)) {
+			pwm_backward();
+	  } else {
+			pwm_stop();
 		}
 	}
 }
@@ -67,14 +62,13 @@ int main (void) {
  
   // System Initialization
   SystemCoreClockUpdate();
-  // ...
-  initLEDGPIO();
-  initLED();
+	initPWM();
 	initUART2(BAUD_RATE);
   osKernelInitialize();                 // Initialize CMSIS-RTOS
+	PWMsem = osSemaphoreNew(1,0,NULL);
   osThreadNew(UART2_thread, NULL, NULL);
-	osThreadNew(led_green_thread, NULL, NULL);    // Create application main thread
-  osThreadNew(led_red_thread, NULL, NULL);
+	osThreadNew(pwm_thread, NULL, NULL);
   osKernelStart();                      // Start thread execution
-  for (;;) {}
+  for (;;) {
+	}
 }

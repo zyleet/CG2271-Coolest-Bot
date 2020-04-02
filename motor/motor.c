@@ -22,13 +22,13 @@ void initMotor(void) {
     PORTA->PCR[2] |= PORT_PCR_MUX(3);
     
     PORTA->PCR[1] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
-	PORTA->PCR[1] |= PORT_PCR_MUX(1);
+		PORTA->PCR[1] |= PORT_PCR_MUX(1);
     
     PORTA->PCR[4] &= ~PORT_PCR_MUX_MASK; //timer 0
     PORTA->PCR[4] |= PORT_PCR_MUX(3);
     
     PORTA->PCR[12] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
-	PORTA->PCR[12] |= PORT_PCR_MUX(1);
+		PORTA->PCR[12] |= PORT_PCR_MUX(1);
     
     PTA->PDDR |= (MASK(1) | MASK(12));
     
@@ -69,14 +69,6 @@ int main (void) {
   for (;;) {
     TPM0_C1V = (int)(0.5 * TPM0->MOD);
     PTA->PSOR |= MASK(12);
-    delay(5000000);
-    TPM0_C1V = 256;
-    delay(5000000);
-    PTA->PCOR |= MASK(12);
-    TPM0_C1V = (int)(0.5 * TPM0->MOD);
-    delay(5000000);
-    TPM0_C1V = 0;
-    delay(5000000);
   }
   
 }
