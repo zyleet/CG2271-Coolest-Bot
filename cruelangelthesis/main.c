@@ -157,7 +157,7 @@ void cruelAngelThesis4Thread(void* argument) {
             MusicRepeat2 = 0;
             releasedSem = mySem;
         }
-        int note[] =     {DS7, D7,  DS7, DS7, D7,  F7,  F7,  DS7, D7,  C7,  D7, DS7, DS7, D7,  F7,  note1, note2, note3};
+        int note[] =     {DS7, D7,  DS7, DS7, D7,  F7,  F7,  DS7, D7,  G6,  D7, DS7, DS7, D7,  F7,  note1, note2, note3};
         int duration[] = {750, 250, 375, 375, 250, 375, 375, 250, 375, 375, 250, 375, 375, 250, 375, 375, 250, 1875};
         int counter = 0;
         int total = sizeof(note)/sizeof(int);
@@ -180,10 +180,10 @@ void cruelAngelThesis4Thread(void* argument) {
 int main() {
     initPWM();
     osKernelInitialize();
-    mySem = osSemaphoreNew(1,1,NULL);
+    mySem = osSemaphoreNew(1,0,NULL);
     mySem2 = osSemaphoreNew(1,0,NULL);
     mySem3 = osSemaphoreNew(1,0,NULL);
-    mySem4 = osSemaphoreNew(1,0,NULL);
+    mySem4 = osSemaphoreNew(1,1,NULL);
 
     osThreadNew(cruelAngelThesis1Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis2Thread, NULL, NULL);
