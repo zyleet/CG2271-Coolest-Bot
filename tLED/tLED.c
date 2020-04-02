@@ -9,7 +9,7 @@
 #define ROW_2 3 // PortC Pin 3
 #define ROW_3 4 // PortC Pin 4
 #define ROW_4 7 // PortC Pin 7
-#define RED 1 // PortA Pin 1
+#define RED 13 // PortA Pin 13
 #define SWITCH 6 // PortD Pin 6
 #define MASK(x) (1 << (x))
 
