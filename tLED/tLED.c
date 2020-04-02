@@ -9,13 +9,16 @@
 #define ROW_2 3 // PortC Pin 3
 #define ROW_3 4 // PortC Pin 4
 #define ROW_4 7 // PortC Pin 7
-#define RED 1 // PortA Pin 1
-#define SWITCH 6 // PortD Pin 5
+#define RED 13 // PortA Pin 13
+#define SWITCH 6 // PortD Pin 6
 #define MASK(x) (1 << (x))
 
 
 osSemaphoreId_t greenSemaphore;
 osSemaphoreId_t redSemaphore;
+
+int greenDelay = 0; //500 when moving, 1 when staying
+int redDelay = 0; //500 when moving, 250 when staying
 
 void InitGPIO(void)
 {
@@ -80,8 +83,20 @@ void PORTD_IRQHandler(void) {
     NVIC_ClearPendingIRQ(PORTD_IRQn);
     
     delay(0x80000);
-    osSemaphoreRelease(greenSemaphore);
-    osSemaphoreRelease(redSemaphore);
+    //osSemaphoreRelease(greenSemaphore);
+    //osSemaphoreRelease(redSemaphore);
+    
+    if (greenDelay == 1) {
+        greenDelay = 500;
+    } else {
+        greenDelay = 1;
+    }
+    
+    if (redDelay == 250) {
+        redDelay = 500;
+    } else {
+        redDelay = 250;
+    }
     
     // clear status flags
     PORTD->ISFR = 0xffffffff;
@@ -91,20 +106,20 @@ void PORTD_IRQHandler(void) {
 //Light up one at a time when moving 
 //All 8 remain lit when stationary 
 
-void green_led_run(void *argument) {
-    osSemaphoreAcquire(greenSemaphore, osWaitForever);
+void green_led(void *argument) {
+    //osSemaphoreAcquire(greenSemaphore, osWaitForever);
     
     int vert = 0;
     int hor = 0;
     int hor_array[4] = {MASK(ROW_1),MASK(ROW_2), MASK(ROW_3), MASK(ROW_4)};
     int vert_array[2] = {MASK(COL_1), MASK(COL_2)};
-   
+    
    
     while(1) {
         PTC->PDOR = 0;
         PTC->PDOR |= vert_array[vert];
         PTC->PDOR |= hor_array[hor];
-        osDelay(500);
+        osDelay(greenDelay);
         hor += 1;
         if (hor == 4) {
             hor = 0;
@@ -113,67 +128,37 @@ void green_led_run(void *argument) {
     }
 }
 
-void green_led_stay(void *argument) {
-    osSemaphoreAcquire(greenSemaphore, osWaitForever);
-    
-    int vert = 0;
-    int hor = 0;
-    int hor_array[4] = {MASK(ROW_1),MASK(ROW_2), MASK(ROW_3), MASK(ROW_4)};
-    int vert_array[2] = {MASK(COL_1), MASK(COL_2)};
-   
-   
-    while(1) {
-        PTC->PDOR = 0;
-        PTC->PDOR |= vert_array[vert];
-        PTC->PDOR |= hor_array[hor];
-        osDelay(1);
-        hor += 1;
-        if (hor == 4) {
-            hor = 0;
-            vert = 1 - vert;
-        }
-    }
-}
 
 //Red LED
 //All 8 flashes at 250ms intervals when stationary 
 //All 8 flashes at 500ms intervals when moving
 
-void red_led_run(void *argument) {
-    osSemaphoreAcquire(redSemaphore, osWaitForever);
+void red_led(void *argument) {
+    //osSemaphoreAcquire(redSemaphore, osWaitForever);
     
     while(1) {
         PTA->PSOR = MASK(RED);
-        osDelay(500);
+        osDelay(redDelay);
         PTA->PCOR = MASK(RED);
-        osDelay(500);
+        osDelay(redDelay);
     }
 }
 
-void red_led_stay(void *argument) {
-    osSemaphoreAcquire(redSemaphore, osWaitForever);
-    
-    while(1) {
-        PTA->PSOR = MASK(RED);
-        osDelay(250);
-        PTA->PCOR = MASK(RED);
-        osDelay(250);
-    }
-}
 
 int main(void) {
 	SystemCoreClockUpdate();
     initSwitch();
 	InitGPIO();
+    greenDelay = 1;
+    redDelay = 250;
     __enable_irq();
     
 	osKernelInitialize();
-    //mySem = osSemaphoreNew(2, 2, NULL);    // Initialize CMSIS-RTOS
-    greenSemaphore = osSemaphoreNew(1, 1,NULL);
-    redSemaphore = osSemaphoreNew(1, 1, NULL);
-    osThreadNew(red_led_stay, NULL, NULL);
-    osThreadNew(green_led_stay, NULL, NULL);
-    osThreadNew(red_led_run, NULL, NULL);
-    osThreadNew(green_led_run, NULL, NULL);
+    //mySem = osSemaphoreNew(2, 2, NULL);  
+    //redSemaphore = osSemaphoreNew(1, 1, NULL);
+    //greenSemaphore = osSemaphoreNew(1, 1,NULL);
+    osThreadNew(red_led, NULL, NULL);
+    osThreadNew(green_led, NULL, NULL);
+    
     osKernelStart();
 }

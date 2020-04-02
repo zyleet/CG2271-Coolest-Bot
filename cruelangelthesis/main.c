@@ -2,6 +2,8 @@
 #include "RTE_Components.h"
 #include  CMSIS_device_header
 #include "cmsis_os2.h"
+#include "string.h"
+
 #define PTB0_Pin 0
 #define PTB1_Pin 1
 #define MASK(x) (1 << (x))
@@ -35,7 +37,10 @@
 #define CRO 500 //CROTCHET
 #define QUA 250 //QUAVER
 
-osSemaphoreId_t mySem, mySem2, mySem3, mySem4, mySem5, mySem6, mySem7, mySem8, mySem9;
+osSemaphoreId_t mySem, mySem2, mySem3, mySem4, mySem5;
+                
+int MusicRepeat1 = 0;
+int MusicRepeat2 = 0;
 
 int freqToMod(int freq) {
     float x = 48000000/(128*(float)freq);
@@ -67,10 +72,11 @@ void initPWM(void) {
 void cruelAngelThesis1Thread(void* argument) {
     for (;;) {
         osSemaphoreAcquire(mySem, osWaitForever);
-        int note[] = {C7, DS7, F7, DS7, F7, F7, F7, AS7, GS7, G7, F7, G7, 100};
-        int duration[] = {500, 500, 375, 375, 250, 250, 250, 250, 250, 125, 250, 375, 250};
+        int note[] =     {C7,  DS7, F7,  DS7, F7,  AS7, GS7, G7,  F7,  G7,  AS7, sp,  F7,  DS7, AS7, AS7, G7,  AS7, AS7, sp};
+        int duration[] = {500, 500, 375, 375, 750, 250, 250, 125, 250, 1125, 500, 400, 300, 375, 250, 250, 250, 250, 375, 1625};
+        int total = sizeof(note)/sizeof(int);
         int counter = 0;
-        for (;counter < 13; counter += 1) {
+        for (;counter < total; counter += 1) {
             TPM1->MOD = freqToMod(note[counter]);
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
             osDelay(duration[counter]);
@@ -79,14 +85,15 @@ void cruelAngelThesis1Thread(void* argument) {
     }
 }
 
+//Bar 10
 void cruelAngelThesis2Thread(void* argument) {
     for (;;) {
         osSemaphoreAcquire(mySem2, osWaitForever);
-        int note[] = {G7, AS7, sp, F7, DS7, AS7, AS7, G7, AS7, AS7, sp};
-        int duration[] = {500, 500, 400, 300, 375, 250, 250, 250, 250, 375, 500};
+        int note[] =     {0,   DS7, AS6,  0,  DS7, F7,  AS6, AS6, G7,  GS7,  G7,  F7, DS7, F7,  G7,  GS7,  G7,  C7,  C7,  D7};
+        int duration[] = {500, 500, 750, 125, 750, 375, 250, 1000, 375, 375, 250, 375, 375, 250, 375, 375, 250, 750, 125, 125};
         int counter = 0;
         int total = sizeof(note)/sizeof(int);
-        for (;counter < 11; counter += 1) {
+        for (;counter < total; counter += 1) {
             TPM1->MOD = freqToMod(note[counter]);
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
             osDelay(duration[counter]);
@@ -95,11 +102,30 @@ void cruelAngelThesis2Thread(void* argument) {
     }
 }
 
+
+//Bar 14
 void cruelAngelThesis3Thread(void* argument) {
     for (;;) {
         osSemaphoreAcquire(mySem3, osWaitForever);
-        int note[] = {0, DS7, AS6, 0, DS7, DS7, F7, AS6, AS6, AS6};
-        int duration[] = {500,375, 750, 125, 250, 375, 375, 250, 750, 250};
+        int note1, note2, timer1, timer2;
+        osSemaphoreId_t releasedSem;
+        if (MusicRepeat1 == 0) {
+            note1 = C7;
+            note2 = D7;
+            timer1 = 1000;
+            timer2 = 1250;
+            MusicRepeat1 = 1;
+            releasedSem = mySem2; //repeat once more first, before moving to next thread
+        } else {
+            note1 = GS7;
+            note2 = G7;
+            timer1 = 250;
+            timer2 = 1875;
+            MusicRepeat1 = 0;
+            releasedSem = mySem4;
+        }
+        int note[] =     {DS7,  D7, DS7,  F7,  GS7,  G7,  F7, DS7, G7,   F7,  E7,  F7,  G7, note1, note2};
+        int duration[] = {750, 1000, 125, 125, 375, 375, 250, 750, 625, 375, 250, 375, 375, timer1, timer2};
         int counter = 0;
         int total = sizeof(note)/sizeof(int);
         for (;counter < total; counter += 1) {
@@ -107,15 +133,22 @@ void cruelAngelThesis3Thread(void* argument) {
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
             osDelay(duration[counter]);
         }
-        osSemaphoreRelease(mySem4);
+        osSemaphoreRelease(releasedSem);
     }
 }
 
+
+
+
+//Bar 26
 void cruelAngelThesis4Thread(void* argument) {
     for (;;) {
         osSemaphoreAcquire(mySem4, osWaitForever);
-        int note[] = {G7, GS7, G7, F7, DS7, F7, G7, GS7, G7, C7, C7, D7};
-        int duration[] = {375, 375, 250, 375, 375, 250, 375, 375, 250, 750, 125, 125};
+        int note1, note2, note3, note4, note5, note6;
+        int timer1;
+        osSemaphoreId_t releasedSem;
+        int note[] =     {DS7, D7,  DS7, D7,  F7,  DS7, D7,  C7,  D7, DS7,  D7,   F7,  D7,  C7,    AS6,    G7,    GS7,   AS7};
+        int duration[] = {750, 250, 750, 250, 750, 250, 375, 375, 250, 750, 250, 375, 375,  250,    500,   500,   500,   500};
         int counter = 0;
         int total = sizeof(note)/sizeof(int);
         for (;counter < total; counter += 1) {
@@ -127,59 +160,12 @@ void cruelAngelThesis4Thread(void* argument) {
     }
 }
 
+//Bar 30
 void cruelAngelThesis5Thread(void* argument) {
     for (;;) {
         osSemaphoreAcquire(mySem5, osWaitForever);
-        int note[] = {DS7, D7, D7, DS7, F7, GS7, G7, F7, DS7, G7};
-        int duration[] = {750, 250, 750, 125, 125, 375, 375, 250, 750, 250};
-        int counter = 0;
-        int total = sizeof(note)/sizeof(int);
-        for (;counter < total; counter += 1) {
-            TPM1->MOD = freqToMod(note[counter]);
-            TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            osDelay(duration[counter]);
-        }
-        osSemaphoreRelease(mySem6);
-    }
-}
-
-void cruelAngelThesis6Thread(void* argument) {
-    for (;;) {
-        osSemaphoreAcquire(mySem6, osWaitForever);
-        int note[] = {G7, F7, E7, F7, G7, C7, C7, D7, D7};
-        int duration[] = {375, 375, 250, 375, 375, 250, 750, 250, 1000};
-        int counter = 0;
-        int total = sizeof(note)/sizeof(int);
-        for (;counter < total; counter += 1) {
-            TPM1->MOD = freqToMod(note[counter]);
-            TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            osDelay(duration[counter]);
-        }
-        osSemaphoreRelease(mySem7);
-    }
-}
-
-void cruelAngelThesis7Thread(void* argument) {
-    for (;;) {
-        osSemaphoreAcquire(mySem7, osWaitForever);
-        int note[] = {50, DS7, AS6, DS7, 0, DS7, F7, AS7, AS7, AS7};
-        int duration[] = {500, 375, 750, 125, 375, 375, 250, 750, 250};
-        int counter = 0;
-        int total = sizeof(note)/sizeof(int);
-        for (;counter < total; counter += 1) {
-            TPM1->MOD = freqToMod(note[counter]);
-            TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            osDelay(duration[counter]);
-        }
-        osSemaphoreRelease(mySem8);
-    }
-}
-
-void cruelAngelThesis8Thread(void* argument) {
-    for (;;) {
-        osSemaphoreAcquire(mySem8, osWaitForever);
-        int note[] = {G7, GS7, G7, F7, DS7, F7, G7, GS7, G7, sp, sp, D8};
-        int duration[] = {375, 375, 250, 375, 375, 250, 375, 375, 250, 750, 125, 125};
+        int note[] =     {DS7, D7,  DS7, D7,  F7,  DS7, D7,  C7,  D7, DS7,  D7,   F7,  G7,  GS7,    G7};
+        int duration[] = {750, 250, 750, 250, 750, 250, 375, 375, 250, 750, 250, 375, 375,  250,   1875};
         int counter = 0;
         int total = sizeof(note)/sizeof(int);
         for (;counter < total; counter += 1) {
@@ -191,6 +177,13 @@ void cruelAngelThesis8Thread(void* argument) {
     }
 }
 
+
+//To loop back, final thread releases the semaphore of the first thread
+//Hard limit of 21 notes in one thread, safe limit is 20
+//Thread 1 is the establish connection ring tone
+//Thread 2 and 3 is the running tone
+//Thread 4 is the ending tone
+//ReleasedSem is used to test how the entire song sounds like, can remove
 int main() {
     initPWM();
     osKernelInitialize();
@@ -199,17 +192,12 @@ int main() {
     mySem3 = osSemaphoreNew(1,0,NULL);
     mySem4 = osSemaphoreNew(1,0,NULL);
     mySem5 = osSemaphoreNew(1,0,NULL);
-    mySem6 = osSemaphoreNew(1,0,NULL);
-    mySem7 = osSemaphoreNew(1,0,NULL);
-    mySem8 = osSemaphoreNew(1,0,NULL);
+
     osThreadNew(cruelAngelThesis1Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis2Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis3Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis4Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis5Thread, NULL, NULL);
-    osThreadNew(cruelAngelThesis6Thread, NULL, NULL);
-    osThreadNew(cruelAngelThesis7Thread, NULL, NULL);
-    osThreadNew(cruelAngelThesis8Thread, NULL, NULL);
     osKernelStart();
     while(1){
     }
