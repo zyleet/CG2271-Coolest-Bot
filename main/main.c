@@ -15,8 +15,6 @@
 #define BAUD_RATE 9600
 #define MASK(x) (1 << (x))
 
-osSemaphoreId_t PWMsem;
-
 //Define thread to handle UART2 interrupts
 void UART2_thread(void *argument) {
 	for (;;) {
@@ -29,10 +27,26 @@ void pwm_thread(void *argument) {
 	for (;;) {
 		osSemaphoreAcquire(PWMsem, osWaitForever);
 		if (UARTdata & MASK(2)) {
-			pwm_forward();
+			if (UARTdata & MASK(4)) {
+				pwm_forward_left();
+			} else if (UARTdata & MASK(5)) {
+				pwm_forward_right();
+			} else {				
+				pwm_forward();
+			}
 		} else if (UARTdata & MASK(3)) {
-			pwm_backward();
-	  } else {
+			if (UARTdata & MASK(4)) {
+				pwm_backward_left();
+			} else if (UARTdata & MASK(5)) {
+				pwm_backward_right();
+			} else {				
+				pwm_backward();
+			}
+	  } else if (UARTdata & MASK(4)) {
+			pwm_left();
+		} else if (UARTdata & MASK(5)) {
+			pwm_right();
+		} else {
 			pwm_stop();
 		}
 	}
@@ -65,7 +79,6 @@ int main (void) {
 	initPWM();
 	initUART2(BAUD_RATE);
   osKernelInitialize();                 // Initialize CMSIS-RTOS
-	PWMsem = osSemaphoreNew(1,0,NULL);
   osThreadNew(UART2_thread, NULL, NULL);
 	osThreadNew(pwm_thread, NULL, NULL);
   osKernelStart();                      // Start thread execution

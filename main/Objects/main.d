@@ -13,3 +13,4 @@
 .\objects\main.o: uart.h
 .\objects\main.o: C:\Users\Fractalisk\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.0\Device\Include\MKL25Z4.h
 .\objects\main.o: pwm.h
+.\objects\main.o: C:\Users\Fractalisk\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.0\Device\Include\MKL25Z4.h

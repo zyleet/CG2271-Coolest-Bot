@@ -6,3 +6,5 @@
 .\objects\pwm.o: C:\Users\Fractalisk\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include\cmsis_compiler.h
 .\objects\pwm.o: C:\Users\Fractalisk\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include\cmsis_armcc.h
 .\objects\pwm.o: .\RTE\Device\MKL25Z128xxx4\system_MKL25Z4.h
+.\objects\pwm.o: C:\Users\Fractalisk\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\Include\cmsis_os2.h
+.\objects\pwm.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h

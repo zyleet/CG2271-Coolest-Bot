@@ -1,7 +1,18 @@
 #include "MKL25Z4.h"
+#include "cmsis_os2.h"
+
 #define PTB0_Pin 0
 #define PTB1_Pin 1
 #define MASK(x) (1 << (x))
+#define LEFT_POWER 0.5
+#define RIGHT_POWER 0.5
+#define LEFT_RATIO 0.5
+#define RIGHT_RATIO 0.5
+#define FORWARD_POWER 1
+#define REVERSE_POWER 1
+#define MOD_VAL 256
+
+osSemaphoreId_t PWMsem;
 
 int freqToMod(int freq) {
     float x = 48000000/(128*(float)freq);
@@ -17,10 +28,11 @@ void initPWM(void) {
 		PORTA->PCR[2] |= PORT_PCR_MUX(1);
 		PORTA->PCR[4] &= ~PORT_PCR_MUX_MASK; //timer 0
     PORTA->PCR[4] |= PORT_PCR_MUX(3);
-		PORTA->PCR[5] &= ~PORT_PCR_MUX_MASK; //timer 0
-    PORTA->PCR[5] |= PORT_PCR_MUX(3);
+		PORTA->PCR[5] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
+		PORTA->PCR[5] |= PORT_PCR_MUX(1);
+
     
-		PTA->PDDR |= (MASK(2));
+		PTA->PDDR |= (MASK(2) | MASK(5));
 	
     SIM_SCGC6 |= SIM_SCGC6_TPM0_MASK | SIM_SCGC6_TPM2_MASK;
     
@@ -33,8 +45,6 @@ void initPWM(void) {
     
     TPM0_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
     TPM0_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
-		TPM0_C2SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
-    TPM0_C2SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
     
     TPM2->SC &= ~((TPM_SC_CMOD_MASK) |TPM_SC_PS_MASK);
     TPM2->SC |= (TPM_SC_CMOD(1) | TPM_SC_PS(7));
@@ -42,48 +52,65 @@ void initPWM(void) {
 		
     TPM2_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
     TPM2_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
-    TPM2_C1SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
-    TPM2_C1SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
 		
-		TPM0->MOD = 256;
-		TPM2->MOD = 256;
+		TPM0->MOD = MOD_VAL;
+		TPM2->MOD = MOD_VAL;
+		
+		osSemaphoreId_t PWMsem = osSemaphoreNew(1,0,NULL);
 }
 
 void pwm_stop(void) {
-	TPM0_C0V = 0;
-	TPM0_C2V = 0;
-	PTA->PCOR |= MASK(2);
 	TPM2_C0V = 0;
+	TPM0_C1V = 0;
+	PTA->PCOR |= (MASK(2) | MASK(5));
 }
 
 void pwm_forward(void) {
-	TPM0_C0V = 0;
-	TPM0_C2V = (int)(0.5 * 256);
-	PTA->PSOR |= MASK(2);
-	TPM2_C0V = (int)(0.5 * 256);
+	TPM2_C0V = (int)(LEFT_POWER * FORWARD_POWER * MOD_VAL);
+	TPM0_C1V = (int)(RIGHT_POWER * FORWARD_POWER * MOD_VAL);
+	PTA->PSOR |= (MASK(2) | MASK(5));
 }
 
 void pwm_backward(void) {
-	TPM0_C2V = 0;
-	TPM0_C0V = (int)(0.5 * TPM0->MOD);
+	TPM2_C0V = (int)(LEFT_POWER * REVERSE_POWER * MOD_VAL);
+	TPM0_C1V = (int)(RIGHT_POWER * REVERSE_POWER * MOD_VAL);
+	PTA->PCOR |= (MASK(2) | MASK(5));
+}
+
+void pwm_left(void) {
+	TPM2_C0V = (int)(LEFT_POWER * REVERSE_POWER * MOD_VAL * 0.5);
+	TPM0_C1V = (int)(RIGHT_POWER * FORWARD_POWER * MOD_VAL * 0.5);
 	PTA->PCOR |= MASK(2);
-	TPM2_C0V = (int)(0.5 * TPM2->MOD);
+	PTA->PSOR |= MASK(5);
 }
 
-void pwm_left() {
+void pwm_right(void) {
+	TPM2_C0V = (int)(LEFT_POWER * FORWARD_POWER * MOD_VAL * 0.5);
+	TPM0_C1V = (int)(RIGHT_POWER * REVERSE_POWER * MOD_VAL * 0.5);
+	PTA->PCOR |= MASK(5);
+	PTA->PSOR |= MASK(2);
 }
 
-void pwm_right() {
+void pwm_forward_left(void) {
+	TPM2_C0V = (int)(LEFT_POWER * FORWARD_POWER * LEFT_RATIO * MOD_VAL);
+	TPM0_C1V = (int)(RIGHT_POWER * FORWARD_POWER * MOD_VAL);
+	PTA->PSOR |= (MASK(2) | MASK(5));
 }
 
-void pwm_forward_left() {
+void pwm_forward_right(void) {
+	TPM2_C0V = (int)(LEFT_POWER * FORWARD_POWER * MOD_VAL);
+	TPM0_C1V = (int)(RIGHT_POWER * FORWARD_POWER * RIGHT_RATIO * MOD_VAL);
+	PTA->PSOR |= (MASK(2) | MASK(5));
 }
 
-void pwm_forward_right() {
+void pwm_backward_left(void) {
+	TPM2_C0V = (int)(LEFT_POWER * FORWARD_POWER / LEFT_RATIO * MOD_VAL);
+	TPM0_C1V = (int)(RIGHT_POWER * FORWARD_POWER * MOD_VAL);
+	PTA->PSOR |= (MASK(2) | MASK(5));
 }
 
-void pwm_backward_left() {
-}
-
-void pwm_backward_right() {
+void pwm_backward_right(void) {
+	TPM2_C0V = (int)(LEFT_POWER * FORWARD_POWER * MOD_VAL);
+	TPM0_C1V = (int)(RIGHT_POWER * FORWARD_POWER / RIGHT_RATIO * MOD_VAL);
+	PTA->PSOR |= (MASK(2) | MASK(5));
 }
