@@ -24,15 +24,14 @@ void initPWM(void) {
     
     PORTA->PCR[1] &= ~PORT_PCR_MUX_MASK; //timer 2
     PORTA->PCR[1] |= PORT_PCR_MUX(3);
-	PORTA->PCR[2] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
-	PORTA->PCR[2] |= PORT_PCR_MUX(1);
-	PORTA->PCR[4] &= ~PORT_PCR_MUX_MASK; //timer 0
+    PORTA->PCR[2] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
+    PORTA->PCR[2] |= PORT_PCR_MUX(1);
+    PORTA->PCR[4] &= ~PORT_PCR_MUX_MASK; //timer 0
     PORTA->PCR[4] |= PORT_PCR_MUX(3);
-	PORTA->PCR[5] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
-	PORTA->PCR[5] |= PORT_PCR_MUX(1);
+    PORTA->PCR[5] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
+    PORTA->PCR[5] |= PORT_PCR_MUX(1);
 
-    
-	PTA->PDDR |= (MASK(2) | MASK(5));
+    PTA->PDDR |= (MASK(2) | MASK(5));
 	
     SIM_SCGC6 |= SIM_SCGC6_TPM0_MASK | SIM_SCGC6_TPM2_MASK;
     
@@ -53,10 +52,10 @@ void initPWM(void) {
     TPM2_C0SC &= ~((TPM_CnSC_ELSB_MASK) | (TPM_CnSC_ELSA_MASK) | (TPM_CnSC_MSB_MASK) | (TPM_CnSC_MSA_MASK));
     TPM2_C0SC |= (TPM_CnSC_ELSB(1) | TPM_CnSC_MSB(1));
 		
-	TPM0->MOD = MOD_VAL;
-	TPM2->MOD = MOD_VAL;
+    TPM0->MOD = MOD_VAL;
+    TPM2->MOD = MOD_VAL;
 		
-	osSemaphoreId_t PWMsem = osSemaphoreNew(1,0,NULL);
+    osSemaphoreId_t PWMsem = osSemaphoreNew(1,0,NULL);
 }
 
 void pwm_stop(void) {

@@ -72,16 +72,15 @@ void led_green_thread(void *argument) {
     }
 }
 
-int main (void) {
- 
-  // System Initialization
-  SystemCoreClockUpdate();
-  initPWM();
-  initUART2(BAUD_RATE);
-  osKernelInitialize();                 // Initialize CMSIS-RTOS
-  osThreadNew(UART2_thread, NULL, NULL);
-  osThreadNew(pwm_thread, NULL, NULL);
-  osKernelStart();                      // Start thread execution
-  for (;;) {
-	}
+int main (void) { 
+    // System Initialization
+    SystemCoreClockUpdate();
+    initPWM();
+    initUART2(BAUD_RATE);
+    osKernelInitialize();                 // Initialize CMSIS-RTOS
+    osThreadNew(UART2_thread, NULL, NULL);
+    osThreadNew(pwm_thread, NULL, NULL);
+    osKernelStart();                      // Start thread execution
+    for (;;) {
+    }
 }
