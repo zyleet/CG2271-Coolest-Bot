@@ -48,7 +48,6 @@ void InitGPIO(void)
 	PTC->PDDR |= (MASK(COL_1) | MASK(COL_2));
     PTC->PDDR |= (MASK(ROW_1) | MASK(ROW_2) | MASK(ROW_3) | MASK(ROW_4));
     PTA->PDDR |= (MASK(RED));
-    
 }
 
 void initSwitch(void){
