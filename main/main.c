@@ -42,7 +42,7 @@ void pwm_thread(void *argument) {
 			} else {				
 				pwm_backward();
 			}
-	  } else if (UARTdata & MASK(4)) {
+        } else if (UARTdata & MASK(4)) {
 			pwm_left();
 		} else if (UARTdata & MASK(5)) {
 			pwm_right();
@@ -76,11 +76,11 @@ int main (void) {
  
   // System Initialization
   SystemCoreClockUpdate();
-	initPWM();
-	initUART2(BAUD_RATE);
+  initPWM();
+  initUART2(BAUD_RATE);
   osKernelInitialize();                 // Initialize CMSIS-RTOS
   osThreadNew(UART2_thread, NULL, NULL);
-	osThreadNew(pwm_thread, NULL, NULL);
+  osThreadNew(pwm_thread, NULL, NULL);
   osKernelStart();                      // Start thread execution
   for (;;) {
 	}

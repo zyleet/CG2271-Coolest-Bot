@@ -34,20 +34,20 @@ void initUART2(uint32_t baud_rate) {
     
     UART2->C2 |= ((UART_C2_RE_MASK) | (UART_C2_RIE_MASK));
 		
-		//enable Uart2 IRQ
-		NVIC_SetPriority(UART2_IRQn, 3);
-		NVIC_ClearPendingIRQ(UART2_IRQn);
-		NVIC_EnableIRQ(UART2_IRQn);	
+	//enable Uart2 IRQ
+	NVIC_SetPriority(UART2_IRQn, 3);
+	NVIC_ClearPendingIRQ(UART2_IRQn);
+	NVIC_EnableIRQ(UART2_IRQn);	
 		
-		//initialize semaphore for UART
-		UARTsem = osSemaphoreNew(1,0,NULL);
+	//initialize semaphore for UART
+	UARTsem = osSemaphoreNew(1,0,NULL);
 }
 
 //Define UART2 interrupt handler
 void UART2_IRQHandler() {
-	NVIC_ClearPendingIRQ(UART2_IRQn);
+    NVIC_ClearPendingIRQ(UART2_IRQn);
 	//clear flag
-  UARTdata = UART2->S1;
+    UARTdata = UART2->S1;
 	UARTdata = UART2->D;
 	osSemaphoreRelease(UARTsem);
 	//do something
