@@ -422,6 +422,21 @@
               <FileType>1</FileType>
               <FilePath>.\buzzer.c</FilePath>
             </File>
+            <File>
+              <FileName>buzzer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\buzzer.h</FilePath>
+            </File>
+            <File>
+              <FileName>freqToMod.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\freqToMod.c</FilePath>
+            </File>
+            <File>
+              <FileName>freqToMod.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\freqToMod.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

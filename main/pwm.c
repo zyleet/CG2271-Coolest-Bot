@@ -1,5 +1,6 @@
 #include "MKL25Z4.h"
 #include "cmsis_os2.h"
+#include "freqToMod.h"
 
 #define PTB0_Pin 0
 #define PTB1_Pin 1
@@ -13,11 +14,6 @@
 #define MOD_VAL 256
 
 osSemaphoreId_t PWMsem;
-
-int freqToMod(int freq) {
-    float x = 48000000/(128*(float)freq);
-    return (int)x;
-}
 
 void initPWM(void) {
     SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
