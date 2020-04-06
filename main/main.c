@@ -19,8 +19,19 @@
 //Define thread to handle UART2 interrupts
 void UART2_thread(void *argument) {
     for (;;) {
-        osSemaphoreAcquire(UARTsem, osWaitForever);				
-        osSemaphoreRelease(PWMsem);
+        osSemaphoreAcquire(UARTsem, osWaitForever);	
+        if (UARTdata & 2) {
+            if (UARTdata & 1) {
+                osSemaphoreRelease(PWMsem);
+            } else {
+                osSemaphoreRelease(mySem);
+            }
+        } else {
+            if (UARTdata & 1) {
+                osSemaphoreRelease(mySem4);
+            } else {
+            }
+        }
     }
 }
 
@@ -60,12 +71,14 @@ int main (void) {
     initPWM();
     initUART2(BAUD_RATE);
     osKernelInitialize();                 // Initialize CMSIS-RTOS
-    osThreadNew(cruelAngelThesis1Thread, NULL, NULL);
+    osThreadNew(UART2_thread, NULL, NULL);
+    osThreadNew(cruelAngelThesis4Thread, NULL, NULL);
+    osThreadSetPriority(cruelAngelThesis4Thread, osPriorityLow7);
+    osThreadNew(cruelAngelThesis5Thread, NULL, NULL);
+    osThreadSetPriority(cruelAngelThesis5Thread, osPriorityLow7);
+    osThreadNew(cruelAngelThesis1Thread, NULL, NULL);  
     osThreadNew(cruelAngelThesis2Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis3Thread, NULL, NULL);
-    osThreadNew(cruelAngelThesis4Thread, NULL, NULL);
-    osThreadNew(cruelAngelThesis5Thread, NULL, NULL);
-    osThreadNew(UART2_thread, NULL, NULL);
     osThreadNew(pwm_thread, NULL, NULL);
     osKernelStart();                      // Start thread execution
     for (;;) {
