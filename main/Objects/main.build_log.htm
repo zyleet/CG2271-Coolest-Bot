@@ -31,6 +31,14 @@ compiling freqToMod.c...
 freqToMod.c(4): warning:  #1-D: last line of file ends without a newline
   }
 freqToMod.c: 1 warning, 0 errors
+compiling pwm.c...
+freqToMod.h(1): warning:  #1-D: last line of file ends without a newline
+  int freqToMod(int freq);
+pwm.c(102): warning:  #68-D: integer conversion resulted in a change of sign
+  	TPM2_C0V = 255 - (int)(LEFT_POWER * FORWARD_POWER / LEFT_RATIO * MOD_VAL);
+pwm.c(109): warning:  #68-D: integer conversion resulted in a change of sign
+  	TPM0_C1V = 255 - (int)(RIGHT_POWER * FORWARD_POWER / RIGHT_RATIO * MOD_VAL);
+pwm.c: 3 warnings, 0 errors
 compiling uart.c...
 compiling main.c...
 led_control.h(3): warning:  #1295-D: Deprecated declaration initLED - give arg types
@@ -46,40 +54,33 @@ pwm.h(15): warning:  #1-D: last line of file ends without a newline
 buzzer.h(15): warning:  #1-D: last line of file ends without a newline
   void cruelAngelThesis5Thread(void* argument);
 main.c: 6 warnings, 0 errors
-compiling pwm.c...
-freqToMod.h(1): warning:  #1-D: last line of file ends without a newline
-  int freqToMod(int freq);
-pwm.c(102): warning:  #68-D: integer conversion resulted in a change of sign
-  	TPM2_C0V = 255 - (int)(LEFT_POWER * FORWARD_POWER / LEFT_RATIO * MOD_VAL);
-pwm.c(109): warning:  #68-D: integer conversion resulted in a change of sign
-  	TPM0_C1V = 255 - (int)(RIGHT_POWER * FORWARD_POWER / RIGHT_RATIO * MOD_VAL);
-pwm.c: 3 warnings, 0 errors
-assembling startup_MKL25Z4.s...
 compiling buzzer.c...
 freqToMod.h(1): warning:  #1-D: last line of file ends without a newline
   int freqToMod(int freq);
-buzzer.c(150): warning:  #177-D: variable "note1"  was declared but never referenced
+buzzer.c(162): warning:  #177-D: variable "note1"  was declared but never referenced
           int note1, note2, note3, note4, note5, note6;
-buzzer.c(150): warning:  #177-D: variable "note2"  was declared but never referenced
+buzzer.c(162): warning:  #177-D: variable "note2"  was declared but never referenced
           int note1, note2, note3, note4, note5, note6;
-buzzer.c(150): warning:  #177-D: variable "note3"  was declared but never referenced
+buzzer.c(162): warning:  #177-D: variable "note3"  was declared but never referenced
           int note1, note2, note3, note4, note5, note6;
-buzzer.c(150): warning:  #177-D: variable "note4"  was declared but never referenced
+buzzer.c(162): warning:  #177-D: variable "note4"  was declared but never referenced
           int note1, note2, note3, note4, note5, note6;
-buzzer.c(150): warning:  #177-D: variable "note5"  was declared but never referenced
+buzzer.c(162): warning:  #177-D: variable "note5"  was declared but never referenced
           int note1, note2, note3, note4, note5, note6;
-buzzer.c(150): warning:  #177-D: variable "note6"  was declared but never referenced
+buzzer.c(162): warning:  #177-D: variable "note6"  was declared but never referenced
           int note1, note2, note3, note4, note5, note6;
-buzzer.c(151): warning:  #177-D: variable "timer1"  was declared but never referenced
+buzzer.c(163): warning:  #177-D: variable "timer1"  was declared but never referenced
           int timer1;
-buzzer.c(152): warning:  #177-D: variable "releasedSem"  was declared but never referenced
+buzzer.c(164): warning:  #177-D: variable "releasedSem"  was declared but never referenced
           osSemaphoreId_t releasedSem;
 buzzer.c: 9 warnings, 0 errors
 compiling rtx_lib.c...
+assembling startup_MKL25Z4.s...
+compiling ledControl.c...
 compiling RTX_Config.c...
 compiling system_MKL25Z4.c...
 linking...
-Program Size: Code=12120 RO-data=1268 RW-data=5160 ZI-data=360  
+Program Size: Code=12504 RO-data=1276 RW-data=5164 ZI-data=356  
 ".\Objects\main.axf" - 0 Error(s), 19 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -134,7 +135,7 @@ Package Vendor: Keil
       Include file:  Device\Source\system_MKL25Z4.h
       Source file:   Device\Source\ARM\startup_MKL25Z4.s
       Source file:   Device\Source\system_MKL25Z4.c
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:06
 </pre>
 </body>
 </html>

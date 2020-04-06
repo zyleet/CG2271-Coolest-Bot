@@ -42,6 +42,14 @@ osSemaphoreId_t mySem, mySem2, mySem3, mySem4, mySem5;
                 
 int MusicRepeat1 = 0;
 int MusicRepeat2 = 0;
+int terminate = 0;
+
+static void delay(volatile uint32_t nof) {
+    while(nof != 0) {
+        __ASM("NOP");
+        nof--;
+    }
+}
 
 void initBuzzer(void) {
     SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK;
@@ -84,7 +92,7 @@ void cruelAngelThesis1Thread(void* argument) {
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
             osDelay(duration[counter]);
         }
-        osSemaphoreRelease(mySem2);
+        TPM_C0V = 0;
     }
 }
 
@@ -96,12 +104,14 @@ void cruelAngelThesis2Thread(void* argument) {
         int duration[] = {500, 500, 750, 125, 750, 375, 250, 1000, 375, 375, 250, 375, 375, 250, 375, 375, 250, 750, 125, 125};
         int counter = 0;
         int total = sizeof(note)/sizeof(int);
-        for (;counter < total; counter += 1) {
+        for (;(counter < total) && (terminate == 0); counter += 1) {
             TPM1->MOD = freqToMod(note[counter]);
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
             osDelay(duration[counter]);
         }
-        osSemaphoreRelease(mySem3);
+        if (terminate == 0) {
+            osSemaphoreRelease(mySem3);
+        }
     }
 }
 
@@ -125,18 +135,20 @@ void cruelAngelThesis3Thread(void* argument) {
             timer1 = 250;
             timer2 = 1875;
             MusicRepeat1 = 0;
-            releasedSem = mySem4;
+            releasedSem = mySem3;
         }
         int note[] =     {DS7,  D7, DS7,  F7,  GS7,  G7,  F7, DS7, G7,   F7,  E7,  F7,  G7, note1, note2};
         int duration[] = {750, 1000, 125, 125, 375, 375, 250, 750, 625, 375, 250, 375, 375, timer1, timer2};
         int counter = 0;
         int total = sizeof(note)/sizeof(int);
-        for (;counter < total; counter += 1) {
+        for (;(counter < total) && (terminate == 0); counter += 1) {
             TPM1->MOD = freqToMod(note[counter]);
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
             osDelay(duration[counter]);
         }
-        osSemaphoreRelease(releasedSem);
+        if (terminate == 0) {
+            osSemaphoreRelease(releasedSem);
+        }
     }
 }
 
@@ -147,6 +159,7 @@ void cruelAngelThesis3Thread(void* argument) {
 void cruelAngelThesis4Thread(void* argument) {
     for (;;) {
         osSemaphoreAcquire(mySem4, osWaitForever);
+        terminate = 1;
         int note1, note2, note3, note4, note5, note6;
         int timer1;
         osSemaphoreId_t releasedSem;
@@ -157,7 +170,7 @@ void cruelAngelThesis4Thread(void* argument) {
         for (;counter < total; counter += 1) {
             TPM1->MOD = freqToMod(note[counter]);
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            osDelay(duration[counter]);
+            delay(duration[counter]*20971/21);
         }
         osSemaphoreRelease(mySem5);
     }
@@ -167,15 +180,15 @@ void cruelAngelThesis4Thread(void* argument) {
 void cruelAngelThesis5Thread(void* argument) {
     for (;;) {
         osSemaphoreAcquire(mySem5, osWaitForever);
-        int note[] =     {DS7, D7,  DS7, D7,  F7,  DS7, D7,  C7,  D7, DS7,  D7,   F7,  G7,  GS7,    G7};
-        int duration[] = {750, 250, 750, 250, 750, 250, 375, 375, 250, 750, 250, 375, 375,  250,   1875};
+        int note[] =     {DS7, D7,  DS7, D7,  F7,  DS7, D7,  DS7,  F7, G7,  GS7, G7,  F7,  DS7, F7, G7};
+        int duration[] = {750, 250, 750, 250, 750, 250, 375, 375, 250, 375, 375, 250, 375,  375, 250, 1875};
         int counter = 0;
         int total = sizeof(note)/sizeof(int);
         for (;counter < total; counter += 1) {
             TPM1->MOD = freqToMod(note[counter]);
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            osDelay(duration[counter]);
+            delay(duration[counter]*20971/21);
         }
-        osSemaphoreRelease(mySem);
+        TPM1_C0V = 0;
     }
 }

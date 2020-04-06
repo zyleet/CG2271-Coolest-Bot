@@ -24,12 +24,13 @@ void UART2_thread(void *argument) {
             if (UARTdata & 1) {
                 osSemaphoreRelease(PWMsem);
             } else {
-                osSemaphoreRelease(mySem);
+                osSemaphoreRelease(mySem2);
             }
         } else {
             if (UARTdata & 1) {
                 osSemaphoreRelease(mySem4);
             } else {
+                osSemaphoreRelease(mySem);
             }
         }
     }
@@ -70,6 +71,7 @@ int main (void) {
     SystemCoreClockUpdate();
     initPWM();
     initUART2(BAUD_RATE);
+    initBuzzer();
     osKernelInitialize();                 // Initialize CMSIS-RTOS
     osThreadNew(UART2_thread, NULL, NULL);
     osThreadNew(cruelAngelThesis4Thread, NULL, NULL);
