@@ -5,7 +5,7 @@
 #include "RTE_Components.h"
 #include CMSIS_device_header
 #include "cmsis_os2.h"
-#include "led_control.h"
+#include "ledControl.h"
 #include "uart.h"
 #include "pwm.h"
 #include "buzzer.h"
@@ -61,7 +61,13 @@ void pwm_thread(void *argument) {
             pwm_right();
         } else {
             pwm_stop();
+            redDelay = 500;
+            running = 0;
+            osSemaphoreRelease(greenStopSemaphore);
+            continue;
         }
+        redDelay = 250;
+        running = 1;
     }
 }
 
@@ -72,6 +78,7 @@ int main (void) {
     initPWM();
     initUART2(BAUD_RATE);
     initBuzzer();
+    initLED();
     osKernelInitialize();                 // Initialize CMSIS-RTOS
     osThreadNew(UART2_thread, NULL, NULL);
     osThreadNew(cruelAngelThesis4Thread, NULL, NULL);
@@ -81,6 +88,9 @@ int main (void) {
     osThreadNew(cruelAngelThesis1Thread, NULL, NULL);  
     osThreadNew(cruelAngelThesis2Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis3Thread, NULL, NULL);
+    osThreadNew(led_red_thread, NULL, NULL);
+    osThreadNew(led_green_running_thread, NULL, NULL);
+    osThreadNew(led_green_stop_thread, NULL, NULL);
     osThreadNew(pwm_thread, NULL, NULL);
     osKernelStart();                      // Start thread execution
     for (;;) {

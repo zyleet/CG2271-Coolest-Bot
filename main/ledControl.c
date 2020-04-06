@@ -9,18 +9,19 @@
 #define ROW_2 3 // PortC Pin 3
 #define ROW_3 4 // PortC Pin 4
 #define ROW_4 7 // PortC Pin 7
-#define RED 13 // PortA Pin 13
+#define RED 1 // PortA Pin 13
 #define SWITCH 6 // PortD Pin 6
 #define MASK(x) (1 << (x))
 
 
-osSemaphoreId_t greenSemaphore;
+osSemaphoreId_t greenStopSemaphore;
 osSemaphoreId_t redSemaphore;
 
-int greenDelay = 0; //500 when moving, 1 when staying
-int redDelay = 0; //500 when moving, 250 when staying
+int greenDelay = 500; //500 when moving, 1 when staying
+int redDelay = 250; //500 when moving, 250 when staying
+int running = 0;
 
-void InitLED(void) {
+void initLED(void) {
 	// Enable Clock to PORTC
 	SIM->SCGC5 |= ((SIM_SCGC5_PORTC_MASK) | (SIM_SCGC5_PORTA_MASK));
 	
@@ -43,34 +44,45 @@ void InitLED(void) {
     PORTC->PCR[ROW_4] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
 	PORTC->PCR[ROW_4] |= PORT_PCR_MUX(1);
     
-    PORTA->PCR[RED] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
-	PORTA->PCR[RED] |= PORT_PCR_MUX(1);
+    PORTC->PCR[RED] &= ~(PORT_PCR_MUX_MASK | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK);
+	PORTC->PCR[RED] |= PORT_PCR_MUX(1);
 	
 	// Set Data Direction Registers for PortC
 	PTC->PDDR |= (MASK(COL_1) | MASK(COL_2));
     PTC->PDDR |= (MASK(ROW_1) | MASK(ROW_2) | MASK(ROW_3) | MASK(ROW_4));
-    PTA->PDDR |= (MASK(RED));
+    PTC->PDDR |= (MASK(RED));
     
     redSemaphore = osSemaphoreNew(1, 1, NULL);
-    greenSemaphore = osSemaphoreNew(1, 1,NULL);
+    greenStopSemaphore = osSemaphoreNew(1, 1,NULL);
 }
 
-void green_led_thread(void *argument) {
+void led_green_running_thread(void *argument) {
     int vert = 0;
     int hor = 0;
     int hor_array[4] = {MASK(ROW_1),MASK(ROW_2), MASK(ROW_3), MASK(ROW_4)};
     int vert_array[2] = {MASK(COL_1), MASK(COL_2)};   
     while(1) {
-        osSemaphoreAcquire(greenSemaphore, osWaitForever);
-        PTC->PDOR = 0;
-        PTC->PDOR |= vert_array[vert];
-        PTC->PDOR |= hor_array[hor];
-        osDelay(greenDelay);
-        hor += 1;
-        if (hor == 4) {
-            hor = 0;
-            vert = 1 - vert;
+        while (running == 1) {
+            PTC->PDOR = 0;
+            PTC->PDOR |= vert_array[vert];
+            PTC->PDOR |= hor_array[hor];
+            osDelay(greenDelay);
+            hor += 1;
+            if (hor == 4) {
+                hor = 0;
+                vert = 1 - vert;
+            }
         }
+    }        
+}
+
+void led_green_stop_thread() {
+    int hor_array = {MASK(ROW_1) | MASK(ROW_2) | MASK(ROW_3) | MASK(ROW_4)};
+    int vert_array = {MASK(COL_1) | MASK(COL_2)};  
+    while (1) {
+        osSemaphoreAcquire(greenStopSemaphore, osWaitForever);
+        PTC->PCOR |= vert_array;
+        PTC->PSOR |= hor_array;
     }
 }
 
@@ -79,12 +91,11 @@ void green_led_thread(void *argument) {
 //All 8 flashes at 250ms intervals when stationary 
 //All 8 flashes at 500ms intervals when moving
 
-void red_led_thread(void *argument) {
+void led_red_thread(void *argument) {
     while(1) {
-        osSemaphoreAcquire(redSemaphore, osWaitForever);
-        PTA->PSOR = MASK(RED);
+        PTC->PSOR = MASK(RED);
         osDelay(redDelay);
-        PTA->PCOR = MASK(RED);
+        PTC->PCOR = MASK(RED);
         osDelay(redDelay);
     }
 }

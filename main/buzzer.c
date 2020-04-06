@@ -92,7 +92,7 @@ void cruelAngelThesis1Thread(void* argument) {
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
             osDelay(duration[counter]);
         }
-        TPM_C0V = 0;
+        TPM1_C0V = 0;
     }
 }
 
@@ -170,7 +170,7 @@ void cruelAngelThesis4Thread(void* argument) {
         for (;counter < total; counter += 1) {
             TPM1->MOD = freqToMod(note[counter]);
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            delay(duration[counter]*20971/21);
+            delay(duration[counter]*20971/42);
         }
         osSemaphoreRelease(mySem5);
     }
@@ -187,7 +187,7 @@ void cruelAngelThesis5Thread(void* argument) {
         for (;counter < total; counter += 1) {
             TPM1->MOD = freqToMod(note[counter]);
             TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            delay(duration[counter]*20971/21);
+            delay(duration[counter]*20971/42);
         }
         TPM1_C0V = 0;
     }
