@@ -5,11 +5,11 @@
 <h2>Tool Versions:</h2>
 IDE-Version: µVision V5.29.0.0
 Copyright (C) 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: chua zong wei, NUS, LIC=----
+License Information: Lee Zhen Yu, National University of Singapore, LIC=----
  
 Tool Versions:
 Toolchain:       MDK-Lite  Version: 5.29.0.0
-Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+Toolchain Path:  D:\Arm Keil\ARM\ARMCC\Bin
 C Compiler:      Armcc.exe V5.06 update 6 (build 750)
 Assembler:       Armasm.exe V5.06 update 6 (build 750)
 Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
@@ -21,25 +21,31 @@ Target DLL:      CMSIS_AGDI.dll V1.32.0.0
 Dialog DLL:      TARMCM1.DLL V1.14.1.0
  
 <h2>Project:</h2>
-C:\Users\Fractalisk\Documents\CG2271-Coolest-Bot\main\main.uvprojx
-Project File Date:  04/06/2020
+C:\Users\Asus\Desktop\CG2271-Coolest-Bot\main\main.uvprojx
+Project File Date:  04/07/2020
 
 <h2>Output:</h2>
-*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Arm Keil\ARM\ARMCC\Bin'
 Rebuild target 'Target 1'
 compiling freqToMod.c...
 freqToMod.c(4): warning:  #1-D: last line of file ends without a newline
   }
 freqToMod.c: 1 warning, 0 errors
-compiling uart.c...
+assembling startup_MKL25Z4.s...
+compiling RTX_Config.c...
+compiling rtx_lib.c...
 compiling pwm.c...
 freqToMod.h(1): warning:  #1-D: last line of file ends without a newline
   int freqToMod(int freq);
-pwm.c(102): warning:  #68-D: integer conversion resulted in a change of sign
-  	TPM2_C0V = 255 - (int)(LEFT_POWER * FORWARD_POWER / LEFT_RATIO * MOD_VAL);
-pwm.c(109): warning:  #68-D: integer conversion resulted in a change of sign
-  	TPM0_C1V = 255 - (int)(RIGHT_POWER * FORWARD_POWER / RIGHT_RATIO * MOD_VAL);
-pwm.c: 3 warnings, 0 errors
+pwm.c: 1 warning, 0 errors
+compiling uart.c...
+compiling buzzer.c...
+freqToMod.h(1): warning:  #1-D: last line of file ends without a newline
+  int freqToMod(int freq);
+buzzer.c(163): warning:  #177-D: variable "releasedSem"  was declared but never referenced
+          osSemaphoreId_t releasedSem;
+buzzer.c: 2 warnings, 0 errors
+compiling ledControl.c...
 compiling main.c...
 ledControl.h(14): warning:  #1-D: last line of file ends without a newline
   void initLED(void);
@@ -52,34 +58,10 @@ pwm.h(15): warning:  #1-D: last line of file ends without a newline
 buzzer.h(15): warning:  #1-D: last line of file ends without a newline
   void cruelAngelThesis5Thread(void* argument);
 main.c: 5 warnings, 0 errors
-compiling buzzer.c...
-freqToMod.h(1): warning:  #1-D: last line of file ends without a newline
-  int freqToMod(int freq);
-buzzer.c(163): warning:  #177-D: variable "note1"  was declared but never referenced
-          int note1, note2, note3, note4, note5, note6;
-buzzer.c(163): warning:  #177-D: variable "note2"  was declared but never referenced
-          int note1, note2, note3, note4, note5, note6;
-buzzer.c(163): warning:  #177-D: variable "note3"  was declared but never referenced
-          int note1, note2, note3, note4, note5, note6;
-buzzer.c(163): warning:  #177-D: variable "note4"  was declared but never referenced
-          int note1, note2, note3, note4, note5, note6;
-buzzer.c(163): warning:  #177-D: variable "note5"  was declared but never referenced
-          int note1, note2, note3, note4, note5, note6;
-buzzer.c(163): warning:  #177-D: variable "note6"  was declared but never referenced
-          int note1, note2, note3, note4, note5, note6;
-buzzer.c(164): warning:  #177-D: variable "timer1"  was declared but never referenced
-          int timer1;
-buzzer.c(165): warning:  #177-D: variable "releasedSem"  was declared but never referenced
-          osSemaphoreId_t releasedSem;
-buzzer.c: 9 warnings, 0 errors
-assembling startup_MKL25Z4.s...
-compiling rtx_lib.c...
-compiling RTX_Config.c...
-compiling ledControl.c...
 compiling system_MKL25Z4.c...
 linking...
 Program Size: Code=13084 RO-data=1300 RW-data=5184 ZI-data=360  
-".\Objects\main.axf" - 0 Error(s), 18 Warning(s).
+".\Objects\main.axf" - 0 Error(s), 9 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -101,10 +83,10 @@ Package Vendor: Keil
   .\RTE\CMSIS
   .\RTE\Device\MKL25Z128xxx4
   .\RTE\_Target_1
-  C:\Users\Fractalisk\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include
-  C:\Users\Fractalisk\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\Include
-  C:\Users\Fractalisk\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\RTX\Include
-  C:\Users\Fractalisk\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.0\Device\Include
+  C:\Users\Asus\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include
+  C:\Users\Asus\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\Include
+  C:\Users\Asus\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\RTOS2\RTX\Include
+  C:\Users\Asus\AppData\Local\Arm\Packs\Keil\Kinetis_KLxx_DFP\1.15.0\Device\Include
 
 <h2>Collection of Component Files used:</h2>
 
@@ -114,26 +96,26 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.3.0
 
    * Component: ARM::CMSIS:RTOS2:Keil RTX5:Library:5.5.1
-      Include file:  CMSIS\RTOS2\RTX\Include\rtx_os.h
       Include file:  CMSIS\RTOS2\RTX\Config\RTX_Config.h
+      Include file:  CMSIS\RTOS2\RTX\Include\rtx_os.h
       Source file:   CMSIS\RTOS2\RTX\Config\RTX_Config.c
-      Source file:   CMSIS\RTOS2\RTX\Template\svc_user.c
-      Source file:   CMSIS\RTOS2\RTX\Template\MemPool.c
-      Source file:   CMSIS\RTOS2\RTX\Template\Semaphore.c
-      Source file:   CMSIS\RTOS2\RTX\Template\Mutex.c
       Source file:   CMSIS\RTOS2\RTX\Template\main.c
-      Source file:   CMSIS\RTOS2\RTX\Template\Thread.c
       Source file:   CMSIS\RTOS2\RTX\Template\Events.c
-      Source file:   CMSIS\RTOS2\RTX\Source\rtx_lib.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Thread.c
+      Source file:   CMSIS\RTOS2\RTX\Template\MemPool.c
       Library file:  CMSIS\RTOS2\RTX\Library\ARM\RTX_CM0.lib
       Source file:   CMSIS\RTOS2\RTX\Template\Timer.c
+      Source file:   CMSIS\RTOS2\RTX\Source\rtx_lib.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Semaphore.c
       Source file:   CMSIS\RTOS2\RTX\Template\MsgQueue.c
+      Source file:   CMSIS\RTOS2\RTX\Template\Mutex.c
+      Source file:   CMSIS\RTOS2\RTX\Template\svc_user.c
 
    * Component: Keil::Device:Startup:2.5.0
       Include file:  Device\Source\system_MKL25Z4.h
-      Source file:   Device\Source\ARM\startup_MKL25Z4.s
       Source file:   Device\Source\system_MKL25Z4.c
-Build Time Elapsed:  00:00:04
+      Source file:   Device\Source\ARM\startup_MKL25Z4.s
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
