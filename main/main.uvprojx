@@ -388,16 +388,6 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>led_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\led_control.c</FilePath>
-            </File>
-            <File>
-              <FileName>led_control.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\led_control.h</FilePath>
-            </File>
-            <File>
               <FileName>uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\uart.c</FilePath>
@@ -418,9 +408,34 @@
               <FilePath>.\pwm.h</FilePath>
             </File>
             <File>
+              <FileName>freqToMod.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\freqToMod.c</FilePath>
+            </File>
+            <File>
+              <FileName>freqToMod.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\freqToMod.h</FilePath>
+            </File>
+            <File>
               <FileName>buzzer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>buzzer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\buzzer.h</FilePath>
+            </File>
+            <File>
+              <FileName>ledControl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ledControl.c</FilePath>
+            </File>
+            <File>
+              <FileName>ledControl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ledControl.h</FilePath>
             </File>
           </Files>
         </Group>
