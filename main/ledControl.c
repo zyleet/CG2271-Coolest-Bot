@@ -14,12 +14,13 @@
 #define MASK(x) (1 << (x))
 
 
-osSemaphoreId_t greenStopSemaphore;
-osSemaphoreId_t redSemaphore;
+osEventFlagsId_t greenEventFlag;
 
 int greenDelay = 500; //500 when moving, 1 when staying
 int redDelay = 250; //500 when moving, 250 when staying
-int running = 0;
+
+void led_green_running_thread(void *argument);
+void led_green_stop_thread(void *argument);
 
 void initLED(void) {
 	// Enable Clock to PORTC
@@ -52,8 +53,7 @@ void initLED(void) {
     PTC->PDDR |= (MASK(ROW_1) | MASK(ROW_2) | MASK(ROW_3) | MASK(ROW_4));
     PTC->PDDR |= (MASK(RED));
     
-    redSemaphore = osSemaphoreNew(1, 1, NULL);
-    greenStopSemaphore = osSemaphoreNew(1, 1,NULL);
+    greenEventFlag = osEventFlagsNew(NULL);
 }
 
 void led_green_running_thread(void *argument) {
@@ -62,25 +62,24 @@ void led_green_running_thread(void *argument) {
     int hor_array[4] = {MASK(ROW_1),MASK(ROW_2), MASK(ROW_3), MASK(ROW_4)};
     int vert_array[2] = {MASK(COL_1), MASK(COL_2)};   
     while(1) {
-        while (running == 1) {
-            PTC->PDOR = 0;
-            PTC->PDOR |= vert_array[vert];
-            PTC->PDOR |= hor_array[hor];
-            osDelay(greenDelay);
-            hor += 1;
-            if (hor == 4) {
-                hor = 0;
-                vert = 1 - vert;
-            }
+        osEventFlagsWait(greenEventFlag, 0x1, osFlagsWaitAny, osWaitForever);
+        PTC->PDOR = 0;
+        PTC->PDOR |= vert_array[vert];
+        PTC->PDOR |= hor_array[hor];
+        osDelay(greenDelay);
+        hor += 1;
+        if (hor == 4) {
+            hor = 0;
+            vert = 1 - vert;
         }
-    }        
+    }
 }
 
-void led_green_stop_thread() {
+void led_green_stop_thread(void *argument) {
     int hor_array = {MASK(ROW_1) | MASK(ROW_2) | MASK(ROW_3) | MASK(ROW_4)};
     int vert_array = {MASK(COL_1) | MASK(COL_2)};  
     while (1) {
-        osSemaphoreAcquire(greenStopSemaphore, osWaitForever);
+        osEventFlagsWait(greenEventFlag, 0x10, osFlagsWaitAny, osWaitForever);
         PTC->PCOR |= vert_array;
         PTC->PSOR |= hor_array;
     }
@@ -99,4 +98,3 @@ void led_red_thread(void *argument) {
         osDelay(redDelay);
     }
 }
-

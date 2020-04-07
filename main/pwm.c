@@ -13,8 +13,6 @@
 #define REVERSE_POWER 1
 #define MOD_VAL 256
 
-osSemaphoreId_t PWMsem;
-
 void initPWM(void) {
     SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
     
@@ -50,8 +48,6 @@ void initPWM(void) {
 		
     TPM0->MOD = MOD_VAL;
     TPM2->MOD = MOD_VAL;
-		
-    osSemaphoreId_t PWMsem = osSemaphoreNew(1,0,NULL);
 }
 
 void pwm_stop(void) {
@@ -67,8 +63,8 @@ void pwm_forward(void) {
 }
 
 void pwm_backward(void) {
-	TPM2_C0V = 255 - (int)(LEFT_POWER * REVERSE_POWER * MOD_VAL);
-	TPM0_C1V = 255 - (int)(RIGHT_POWER * REVERSE_POWER * MOD_VAL);
+	TPM2_C0V = MOD_VAL - (int)(LEFT_POWER * REVERSE_POWER * MOD_VAL);
+	TPM0_C1V = MOD_VAL - (int)(RIGHT_POWER * REVERSE_POWER * MOD_VAL);
 	PTA->PCOR |= (MASK(2) | MASK(5));
 }
 
@@ -99,13 +95,13 @@ void pwm_forward_right(void) {
 }
 
 void pwm_backward_left(void) {
-	TPM2_C0V = 255 - (int)(LEFT_POWER * FORWARD_POWER / LEFT_RATIO * MOD_VAL);
-	TPM0_C1V = 255 - (int)(RIGHT_POWER * FORWARD_POWER * MOD_VAL);
+	TPM2_C0V = MOD_VAL - (int)(LEFT_POWER * FORWARD_POWER / LEFT_RATIO * MOD_VAL);
+	TPM0_C1V = MOD_VAL - (int)(RIGHT_POWER * FORWARD_POWER * MOD_VAL);
 	PTA->PCOR |= (MASK(2) | MASK(5));
 }
 
 void pwm_backward_right(void) {
-	TPM2_C0V = 255 - (int)(LEFT_POWER * FORWARD_POWER * MOD_VAL);
-	TPM0_C1V = 255 - (int)(RIGHT_POWER * FORWARD_POWER / RIGHT_RATIO * MOD_VAL);
+	TPM2_C0V = MOD_VAL - (int)(LEFT_POWER * FORWARD_POWER * MOD_VAL);
+	TPM0_C1V = MOD_VAL - (int)(RIGHT_POWER * FORWARD_POWER / RIGHT_RATIO * MOD_VAL);
 	PTA->PCOR |= (MASK(2) | MASK(5));
 }

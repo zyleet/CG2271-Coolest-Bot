@@ -2,7 +2,6 @@
 #include "cmsis_os2.h"
 
 int freqToMod(int freq);
-extern osSemaphoreId_t PWMsem;
 void initPWM(void);
 void pwm_forward(void);
 void pwm_backward(void);

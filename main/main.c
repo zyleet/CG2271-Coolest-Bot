@@ -1,7 +1,3 @@
-/*----------------------------------------------------------------------------
- * CMSIS-RTOS 'main' function template
- *---------------------------------------------------------------------------*/
- 
 #include "RTE_Components.h"
 #include CMSIS_device_header
 #include "cmsis_os2.h"
@@ -17,57 +13,51 @@
 #define MASK(x) (1 << (x))
 
 //Define thread to handle UART2 interrupts
+void motor(int UARTdata);
+
 void UART2_thread(void *argument) {
+    int UARTdata;
     for (;;) {
-        osSemaphoreAcquire(UARTsem, osWaitForever);	
-        if (UARTdata & 2) {
-            if (UARTdata & 1) {
-                osSemaphoreRelease(PWMsem);
-            } else {
-                osSemaphoreRelease(mySem2);
-            }
-        } else {
-            if (UARTdata & 1) {
-                osSemaphoreRelease(mySem4);
-            } else {
-                osSemaphoreRelease(mySem);
-            }
+        osMessageQueueGet(UARTMsgQ, &UARTdata, NULL, osWaitForever);  //wait for message from UART IRQ
+        redDelay = 250;                                               //set initial red blinking speed to 250
+        osEventFlagsSet(greenEventFlag, 0x10);                        //set all LED to non blink initially
+        if ((UARTdata & 11) == 11) {                                  //to get motor to move
+            redDelay = 500;                                           //if motor moves, set red blinking speed to 500
+            osEventFlagsSet(greenEventFlag, 0x1);                     //enable green led blinking
+            motor(UARTdata);                                          //decode motor data
+        } else if ((UARTdata & 11) == 00) {
+            cruelAngelThesis1Thread();                                //play music to indicate communication established
+        } else if ((UARTdata & 11) == 01) {
+            osEventFlagsSet(idleMusicFlag, 0x0);                      //disable idle music
+            cruelAngelThesis4Thread();                                //play ending music
+            cruelAngelThesis5Thread();
         }
     }
 }
 
-void pwm_thread(void *argument) {
-    for (;;) {
-        osSemaphoreAcquire(PWMsem, osWaitForever);
-        if (UARTdata & MASK(2)) {
-            if (UARTdata & MASK(4)) {
-                pwm_forward_left();
-            } else if (UARTdata & MASK(5)) {
-                pwm_forward_right();
-            } else {				
-                pwm_forward();
-            }
-        } else if (UARTdata & MASK(3)) {
-            if (UARTdata & MASK(4)) {
-                pwm_backward_left();
-            } else if (UARTdata & MASK(5)) {
-                pwm_backward_right();
-            } else {				
-                pwm_backward();
-            }
-        } else if (UARTdata & MASK(4)) {
-            pwm_left();
+void motor(int UARTdata) {
+    if (UARTdata & MASK(2)) {
+        if (UARTdata & MASK(4)) {
+            pwm_forward_left();
         } else if (UARTdata & MASK(5)) {
-            pwm_right();
-        } else {
-            pwm_stop();
-            redDelay = 500;
-            running = 0;
-            osSemaphoreRelease(greenStopSemaphore);
-            continue;
+            pwm_forward_right();
+        } else {				
+            pwm_forward();
         }
-        redDelay = 250;
-        running = 1;
+    } else if (UARTdata & MASK(3)) {
+        if (UARTdata & MASK(4)) {
+            pwm_backward_left();
+        } else if (UARTdata & MASK(5)) {
+            pwm_backward_right();
+        } else {				
+            pwm_backward();
+        }
+    } else if (UARTdata & MASK(4)) {
+        pwm_left();
+    } else if (UARTdata & MASK(5)) {
+        pwm_right();
+    } else {
+        pwm_stop();
     }
 }
 
@@ -81,17 +71,11 @@ int main (void) {
     initLED();
     osKernelInitialize();                 // Initialize CMSIS-RTOS
     osThreadNew(UART2_thread, NULL, NULL);
-    osThreadNew(cruelAngelThesis4Thread, NULL, NULL);
-    osThreadSetPriority(cruelAngelThesis4Thread, osPriorityLow7);
-    osThreadNew(cruelAngelThesis5Thread, NULL, NULL);
-    osThreadSetPriority(cruelAngelThesis5Thread, osPriorityLow7);
-    osThreadNew(cruelAngelThesis1Thread, NULL, NULL);  
     osThreadNew(cruelAngelThesis2Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis3Thread, NULL, NULL);
     osThreadNew(led_red_thread, NULL, NULL);
     osThreadNew(led_green_running_thread, NULL, NULL);
     osThreadNew(led_green_stop_thread, NULL, NULL);
-    osThreadNew(pwm_thread, NULL, NULL);
     osKernelStart();                      // Start thread execution
     for (;;) {
     }
