@@ -151,33 +151,27 @@ void cruelAngelThesis3Thread(void* argument) {
 
 //Bar 26
 void cruelAngelThesis4Thread() {
-    for (;;) {
-        int note[] =     {DS7, D7,  DS7, D7,  F7,  DS7, D7,  C7,  D7, DS7,  D7,   F7,  D7,  C7,    AS6,    G7,    GS7,   AS7};
-        int duration[] = {750, 250, 750, 250, 750, 250, 375, 375, 250, 750, 250, 375, 375,  250,    500,   500,   500,   500};
-        int counter = 0;
-        int total = sizeof(note)/sizeof(int);
-        for (;counter < total; counter += 1) {
-            TPM1->MOD = freqToMod(note[counter]);
-            TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            osDelay(duration[counter]*20971/21);
-        }
-        osSemaphoreRelease(mySem5);
+    int note[] =     {DS7, D7,  DS7, D7,  F7,  DS7, D7,  C7,  D7, DS7,  D7,   F7,  D7,  C7,    AS6,    G7,    GS7,   AS7};
+    int duration[] = {750, 250, 750, 250, 750, 250, 375, 375, 250, 750, 250, 375, 375,  250,    500,   500,   500,   500};
+    int counter = 0;
+    int total = sizeof(note)/sizeof(int);
+    for (;counter < total; counter += 1) {
+        TPM1->MOD = freqToMod(note[counter]);
+        TPM1_C0V = (int)(0.2 * TPM1->MOD);
+        osDelay(duration[counter]*20971/21);
     }
 }
 
 //Bar 30
 void cruelAngelThesis5Thread() {
-    for (;;) {
-        osSemaphoreAcquire(mySem5, osWaitForever);
-        int note[] =     {DS7, D7,  DS7, D7,  F7,  DS7, D7,  DS7,  F7, G7,  GS7, G7,  F7,  DS7, F7, G7};
-        int duration[] = {750, 250, 750, 250, 750, 250, 375, 375, 250, 375, 375, 250, 375,  375, 250, 1875};
-        int counter = 0;
-        int total = sizeof(note)/sizeof(int);
-        for (;counter < total; counter += 1) {
-            TPM1->MOD = freqToMod(note[counter]);
-            TPM1_C0V = (int)(0.2 * TPM1->MOD);
-            osDelay(duration[counter]*20971/42);
-        }
-        TPM1_C0V = 0;
+    int note[] =     {DS7, D7,  DS7, D7,  F7,  DS7, D7,  DS7,  F7, G7,  GS7, G7,  F7,  DS7, F7, G7};
+    int duration[] = {750, 250, 750, 250, 750, 250, 375, 375, 250, 375, 375, 250, 375,  375, 250, 1875};
+    int counter = 0;
+    int total = sizeof(note)/sizeof(int);
+    for (;counter < total; counter += 1) {
+        TPM1->MOD = freqToMod(note[counter]);
+        TPM1_C0V = (int)(0.2 * TPM1->MOD);
+        osDelay(duration[counter]*20971/42);
     }
+    TPM1_C0V = 0;
 }

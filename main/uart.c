@@ -39,7 +39,7 @@ void initUART2(uint32_t baud_rate) {
     NVIC_EnableIRQ(UART2_IRQn);	
 		
     //initialize semaphore for UART
-    UARTMsgQ = osMessageQueueNew(1, sizeof(int), NULL);
+    UARTMsgQ = osMessageQueueNew(1, 1, NULL);
 }
 
 //Define UART2 interrupt handler
