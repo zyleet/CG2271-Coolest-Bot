@@ -65,11 +65,11 @@ void motor(int UARTdata) {
 int main (void) { 
     // System Initialization
     SystemCoreClockUpdate();
+    osKernelInitialize();                 // Initialize CMSIS-RTOS
     initPWM();
     initUART2(BAUD_RATE);
     initBuzzer();
     initLED();
-    osKernelInitialize();                 // Initialize CMSIS-RTOS
     osThreadNew(UART2_thread, NULL, NULL);
     osThreadNew(cruelAngelThesis2Thread, NULL, NULL);
     osThreadNew(cruelAngelThesis3Thread, NULL, NULL);

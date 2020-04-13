@@ -14,11 +14,11 @@ Section Cross References
     main.o(i.UART2_thread) refers to ledcontrol.o(.data) for redDelay
     main.o(i.UART2_thread) refers to buzzer.o(.data) for idleMusicFlag
     main.o(i.main) refers to system_mkl25z4.o(i.SystemCoreClockUpdate) for SystemCoreClockUpdate
+    main.o(i.main) refers to rtx_kernel.o(.text.osKernelInitialize) for osKernelInitialize
     main.o(i.main) refers to pwm.o(i.initPWM) for initPWM
     main.o(i.main) refers to uart.o(i.initUART2) for initUART2
     main.o(i.main) refers to buzzer.o(i.initBuzzer) for initBuzzer
     main.o(i.main) refers to ledcontrol.o(i.initLED) for initLED
-    main.o(i.main) refers to rtx_kernel.o(.text.osKernelInitialize) for osKernelInitialize
     main.o(i.main) refers to rtx_thread.o(.text.osThreadNew) for osThreadNew
     main.o(i.main) refers to rtx_kernel.o(.text.osKernelStart) for osKernelStart
     main.o(i.main) refers to main.o(i.UART2_thread) for UART2_thread
