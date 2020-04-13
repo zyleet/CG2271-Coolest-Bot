@@ -21,13 +21,13 @@ void UART2_thread(void *argument) {
         osMessageQueueGet(UARTMsgQ, &UARTdata, NULL, osWaitForever);  //wait for message from UART IRQ
         redDelay = 250;                                               //set initial red blinking speed to 250
         osEventFlagsSet(greenEventFlag, 0x10);                        //set all LED to non blink initially
-        if ((UARTdata & 11) == 0b11) {                                  //to get motor to move
+        if ((UARTdata & 0b11) == 0b11) {                                  //to get motor to move
             redDelay = 500;                                           //if motor moves, set red blinking speed to 500
             osEventFlagsSet(greenEventFlag, 0x1);                     //enable green led blinking
             motor(UARTdata);                                          //decode motor data
-        } else if ((UARTdata & 11) == 0b00) {
+        } else if ((UARTdata & 0b11) == 0b00) {
             cruelAngelThesis1Thread();                                //play music to indicate communication established
-        } else if ((UARTdata & 11) == 0b01) {
+        } else if ((UARTdata & 0b11) == 0b01) {
             osEventFlagsSet(idleMusicFlag, 0x0);                      //disable idle music
             cruelAngelThesis4Thread();                                //play ending music
             cruelAngelThesis5Thread();
