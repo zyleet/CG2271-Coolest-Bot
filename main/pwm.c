@@ -7,8 +7,8 @@
 #define MASK(x) (1 << (x))
 #define LEFT_POWER 0.5
 #define RIGHT_POWER 0.5
-#define LEFT_RATIO 0.01
-#define RIGHT_RATIO 0.01
+#define LEFT_RATIO 0.5
+#define RIGHT_RATIO 0.5
 #define FORWARD_POWER 1
 #define REVERSE_POWER 1
 #define MOD_VAL 256
@@ -86,27 +86,26 @@ void pwm_right(void) {
 	PTA->PSOR |= MASK(2);
 }
 
-void pwm_forward_right(void) {
+void pwm_forward_left(void) {
 	TPM2_C0V = (int)(LEFT_POWER * FORWARD_POWER * LEFT_RATIO * MOD_VAL);
 	TPM0_C1V = (int)(RIGHT_POWER * FORWARD_POWER * MOD_VAL);
 	PTA->PSOR |= (MASK(2) | MASK(5));
 }
 
-void pwm_forward_left(void) {
+void pwm_forward_right(void) {
 	TPM2_C0V = (int)(LEFT_POWER * FORWARD_POWER * MOD_VAL);
 	TPM0_C1V = (int)(RIGHT_POWER * FORWARD_POWER * RIGHT_RATIO * MOD_VAL);
 	PTA->PSOR |= (MASK(2) | MASK(5));
 }
 
-void pwm_backward_right(void) {
-	TPM2_C0V = 255 - (int)(LEFT_POWER * REVERSE_POWER * MOD_VAL * 0.2);
-	TPM0_C1V = 255 - (int)(RIGHT_POWER * REVERSE_POWER * MOD_VAL * 1.7);
+void pwm_backward_left(void) {
+	TPM2_C0V = 255 - (int)(LEFT_POWER * FORWARD_POWER / LEFT_RATIO * MOD_VAL);
+	TPM0_C1V = 255 - (int)(RIGHT_POWER * FORWARD_POWER * MOD_VAL);
 	PTA->PCOR |= (MASK(2) | MASK(5));
 }
 
-
-void pwm_backward_left(void) {
-	TPM2_C0V = 255 - (int)(LEFT_POWER * REVERSE_POWER * MOD_VAL * 1.7);
-	TPM0_C1V = 255 - (int)(RIGHT_POWER * REVERSE_POWER * MOD_VAL * 0.2);
+void pwm_backward_right(void) {
+	TPM2_C0V = 255 - (int)(LEFT_POWER * FORWARD_POWER * MOD_VAL);
+	TPM0_C1V = 255 - (int)(RIGHT_POWER * FORWARD_POWER / RIGHT_RATIO * MOD_VAL);
 	PTA->PCOR |= (MASK(2) | MASK(5));
 }
