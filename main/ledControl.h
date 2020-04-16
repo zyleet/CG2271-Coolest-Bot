@@ -7,6 +7,7 @@ extern osSemaphoreId_t greenStopSemaphore;
 extern osSemaphoreId_t redSemaphore;
 extern int running;
 extern int redDelay; //500 when moving, 250 when staying
+extern int connectFlag;
 
 void led_red_thread(void *argument);
 void led_green_running_thread(void *argument);

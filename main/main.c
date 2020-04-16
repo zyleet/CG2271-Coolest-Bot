@@ -31,6 +31,7 @@ void UART2_thread(void *argument) {
                 osSemaphoreRelease(mySem4);
             } else {
                 osSemaphoreRelease(mySem);
+                connectFlag = 1;
             }
         }
     }

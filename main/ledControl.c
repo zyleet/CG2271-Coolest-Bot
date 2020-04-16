@@ -20,6 +20,7 @@ osSemaphoreId_t redSemaphore;
 int greenDelay = 500; //500 when moving, 1 when staying
 int redDelay = 250; //500 when moving, 250 when staying
 int running = 0;
+int connectFlag = 0; 
 
 void initLED(void) {
 	// Enable Clock to PORTC
@@ -78,9 +79,20 @@ void led_green_running_thread(void *argument) {
 
 void led_green_stop_thread() {
     int hor_array = {MASK(ROW_1) | MASK(ROW_2) | MASK(ROW_3) | MASK(ROW_4)};
-    int vert_array = {MASK(COL_1) | MASK(COL_2)};  
+    int vert_array = {MASK(COL_1) | MASK(COL_2)};
     while (1) {
         osSemaphoreAcquire(greenStopSemaphore, osWaitForever);
+        if (connectFlag == 1) {
+            for (int count = 0; count <= 1; count++) {
+                PTC->PCOR |= vert_array;
+                PTC->PSOR |= hor_array;
+                osDelay(250);
+                PTC->PSOR |= vert_array;
+                PTC->PCOR |= hor_array;
+                osDelay(250);
+            }
+            connectFlag = 0;
+        }
         PTC->PCOR |= vert_array;
         PTC->PSOR |= hor_array;
     }

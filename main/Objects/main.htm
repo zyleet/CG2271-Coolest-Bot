@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\main.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\main.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Mon Apr 06 17:06:49 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu Apr 16 23:00:11 2020
 <BR><P>
 <H3>Maximum Stack Usage =        224 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -606,6 +606,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = osDelay
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;led_red_thread
+<LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;led_green_stop_thread
 <LI><a href="#[4e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;led_green_running_thread
 <LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cruelAngelThesis3Thread
 <LI><a href="#[4b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cruelAngelThesis2Thread
@@ -1004,7 +1005,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_mkl25z4.o(RESET)
 </UL>
-<P><STRONG><a name="[47]"></a>UART2_thread</STRONG> (Thumb, 90 bytes, Stack size 0 bytes, main.o(i.UART2_thread))
+<P><STRONG><a name="[47]"></a>UART2_thread</STRONG> (Thumb, 96 bytes, Stack size 0 bytes, main.o(i.UART2_thread))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = UART2_thread &rArr; osSemaphoreRelease &rArr; osRtxPostProcess &rArr; osRtxErrorNotify &rArr; __ARM_common_switch8
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSemaphoreRelease
@@ -1181,10 +1182,11 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(i.main)
 </UL>
-<P><STRONG><a name="[4f]"></a>led_green_stop_thread</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, ledcontrol.o(i.led_green_stop_thread))
+<P><STRONG><a name="[4f]"></a>led_green_stop_thread</STRONG> (Thumb, 110 bytes, Stack size 0 bytes, ledcontrol.o(i.led_green_stop_thread))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = led_green_stop_thread &rArr; osSemaphoreAcquire
 </UL>
-<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSemaphoreAcquire
+<BR>[Calls]<UL><LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osSemaphoreAcquire
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(i.main)
 </UL>
@@ -1229,11 +1231,11 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pwm_thread
 </UL>
 
-<P><STRONG><a name="[c7]"></a>pwm_backward_left</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, pwm.o(i.pwm_backward_left))
+<P><STRONG><a name="[c7]"></a>pwm_backward_left</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, pwm.o(i.pwm_backward_left))
 <BR><BR>[Called By]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pwm_thread
 </UL>
 
-<P><STRONG><a name="[c8]"></a>pwm_backward_right</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, pwm.o(i.pwm_backward_right))
+<P><STRONG><a name="[c8]"></a>pwm_backward_right</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, pwm.o(i.pwm_backward_right))
 <BR><BR>[Called By]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pwm_thread
 </UL>
 
