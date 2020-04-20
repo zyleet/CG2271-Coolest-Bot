@@ -15,6 +15,7 @@
 
 
 osEventFlagsId_t greenEventFlag;
+osSemaphoreId_t myConnectSem;
 
 int greenDelay = 500; //500 when moving, 1 when staying
 int redDelay = 250; //500 when moving, 250 when staying
@@ -54,6 +55,7 @@ void initLED(void) {
     PTC->PDDR |= (MASK(RED));
     
     greenEventFlag = osEventFlagsNew(NULL);
+    myConnectSem = osSemaphoreNew(1,0,NULL);
 }
 
 void led_green_running_thread(void *argument) {
@@ -85,6 +87,19 @@ void led_green_stop_thread(void *argument) {
     }
 }
 
+void led_green_connect_thread(void *argument) {
+    int hor_array = {MASK(ROW_1) | MASK(ROW_2) | MASK(ROW_3) | MASK(ROW_4)};
+    int vert_array = {MASK(COL_1) | MASK(COL_2)};
+    osSemaphoreAcquire(myConnectSem, osWaitForever);
+    PTC->PCOR |= vert_array;
+    PTC->PSOR |= hor_array;
+    osDelay(greenDelay/2);
+    PTC->PSOR |= vert_array;
+    PTC->PCOR |= hor_array;
+    osDelay(greenDelay/2);
+    PTC->PCOR |= vert_array;
+    PTC->PSOR |= hor_array;
+}
 
 //Red LED
 //All 8 flashes at 250ms intervals when stationary 
